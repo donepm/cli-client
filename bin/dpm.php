@@ -8,12 +8,14 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use DonePM\ConsoleClient\Commands\InitCommand;
 use DonePM\ConsoleClient\Commands\Projects\ListCommand;
 use DonePM\ConsoleClient\Application;
 use DonePM\ConsoleClient\Commands\RollbackCommand;
 use DonePM\ConsoleClient\Commands\SelfUpdateCommand;
 
 $application = new Application();
+$application->add(new InitCommand());
 $application->add(new ListCommand());
 
 $application->add(new SelfUpdateCommand());

@@ -3,7 +3,6 @@
 namespace DonePM\ConsoleClient\Commands;
 
 use Humbug\SelfUpdate\Updater;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -30,12 +29,9 @@ class SelfUpdateCommand extends Command
     /**
      * executes the command
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function handle()
     {
         $updater = new Updater(null, false);
         /** @var \Humbug\SelfUpdate\Strategy\ShaStrategy $strategy */
@@ -50,13 +46,14 @@ class SelfUpdateCommand extends Command
             }
             $new = $updater->getNewVersion();
             $old = $updater->getOldVersion();
-            $output->writeln(sprintf('Updated from %s to %s', $old, $new));
+            $this->info(sprintf('Updated from %s to %s', $old, $new));
 
             return 0;
         } catch (\Exception $e) {
             // Report an error!
 
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            $this->error($e->getMessage());
+
             return 1;
         }
     }

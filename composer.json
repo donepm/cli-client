@@ -4,7 +4,8 @@
     "require": {
         "symfony/console": "~3.0",
         "guzzlehttp/guzzle": "~6.1",
-        "padraic/phar-updater": "~1.0"
+        "padraic/phar-updater": "~1.0",
+        "illuminate/encryption": "~5.1"
     },
     "autoload": {
 		"psr-4": {

@@ -2,7 +2,7 @@
 
 namespace DonePM\ConsoleClient\Commands\Projects;
 
-use Symfony\Component\Console\Command\Command;
+use DonePM\ConsoleClient\Commands\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -25,14 +25,9 @@ class ListCommand extends Command
 
     /**
      * executes the command
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return null
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function handle()
     {
-        $output->writeln('Projects listed...');
+        $this->info('Projects listed...');
     }
 }
