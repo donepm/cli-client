@@ -19,5 +19,8 @@
             "email": "github@mail.robert-kummer.de"
         }
     ],
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "require-dev": {
+        "phpunit/phpunit": "~4"
+    }
 }
