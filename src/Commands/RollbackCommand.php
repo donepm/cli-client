@@ -2,7 +2,7 @@
 
 namespace DonePM\ConsoleClient\Commands;
 
-use DonePM\ConsoleClient\Services\PharUpdateService;
+use Humbug\SelfUpdate\Updater;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,14 +34,23 @@ class RollbackCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $updateService = new PharUpdateService();
+        $updater = new Updater(null, false);
+        try {
+            $result = $updater->rollback();
+            if ( ! $result) {
+                $output->writeln('<error>Rollback failed!</error>');
 
-        $result = $updateService->rollback();
+                // report failure!
+                return 1;
+            }
 
-        if ($result->failed()) {
-            $output->writeln('<error>Rollback failed.</error>');
+            return 0;
+        } catch (\Exception $e) {
+
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+
+            // Report an error!
+            return 1;
         }
-
-        return 0;
     }
 }

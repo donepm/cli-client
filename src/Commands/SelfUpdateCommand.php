@@ -2,7 +2,7 @@
 
 namespace DonePM\ConsoleClient\Commands;
 
-use DonePM\ConsoleClient\Services\PharUpdateService;
+use Humbug\SelfUpdate\Updater;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -37,14 +37,27 @@ class SelfUpdateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $updateService = new PharUpdateService(self::UPDATE_PHAR_URL, self::UPDATE_VERSION_URL);
+        $updater = new Updater(null, false);
+        /** @var \Humbug\SelfUpdate\Strategy\ShaStrategy $strategy */
+        $strategy = $updater->getStrategy();
+        $strategy->setPharUrl(self::UPDATE_PHAR_URL);
+        $strategy->setVersionUrl(self::UPDATE_VERSION_URL);
+        try {
+            $result = $updater->update();
+            if ( ! $result) {
+                // No update needed!
+                return 0;
+            }
+            $new = $updater->getNewVersion();
+            $old = $updater->getOldVersion();
+            $output->writeln(sprintf('Updated from %s to %s', $old, $new));
 
-        $result = $updateService->update();
+            return 0;
+        } catch (\Exception $e) {
+            // Report an error!
 
-        if ($result->failed()) {
-            $output->writeln('<error>Update failed.</error>');
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            return 1;
         }
-
-        return 0;
     }
 }
