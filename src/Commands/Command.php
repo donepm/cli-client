@@ -393,6 +393,16 @@ class Command extends \Symfony\Component\Console\Command\Command
     }
 
     /**
+     * returns config file
+     *
+     * @return string
+     */
+    protected function getConfigFile()
+    {
+        return $this->getDirectoryInHome('.dpm/config');
+    }
+
+    /**
      * returns directory path within home directory
      *
      * @param string $path

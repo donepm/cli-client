@@ -32,14 +32,14 @@ class InitCommand extends Command
      */
     protected function handle()
     {
-        $configFile = $this->getDirectoryInHome('.dpm/config');
+        $configFile = $this->getConfigFile();
 
         $config = $this->readConfigOrUseDefaultConfig($configFile);
 
         if ( ! $config->has('url')
             || ! $this->confirm('Is your donePM API url ' . $config->get('url') . '?', true)
         ) {
-            $url = $this->ask('What is your donePM API url?', 'https://api.done.pm/v1');
+            $url = $this->ask('What is your donePM API url?', 'https://api.done.pm/');
             $config->set('url', $url);
         }
 

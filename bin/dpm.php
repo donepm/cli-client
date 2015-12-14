@@ -13,9 +13,11 @@ use DonePM\ConsoleClient\Commands\Projects\ListCommand;
 use DonePM\ConsoleClient\Application;
 use DonePM\ConsoleClient\Commands\RollbackCommand;
 use DonePM\ConsoleClient\Commands\SelfUpdateCommand;
+use DonePM\ConsoleClient\Commands\TokenCommand;
 
 $application = new Application();
 $application->add(new InitCommand());
+$application->add(new TokenCommand());
 $application->add(new ListCommand());
 
 $application->add(new SelfUpdateCommand());
