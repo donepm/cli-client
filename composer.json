@@ -1,0 +1,22 @@
+{
+    "name": "donepm/cli-client",
+    "description": "donepm command line client",
+    "require": {
+        "symfony/console": "~3.0",
+        "guzzlehttp/guzzle": "~6.1"
+    },
+    "autoload": {
+		"psr-4": {
+			"DonePM\\ConsoleClient\\": "src/"
+		}
+	},
+	"bin": ["bin/dpm.php"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Robert Kummer",
+            "email": "github@mail.robert-kummer.de"
+        }
+    ],
+    "minimum-stability": "stable"
+}
