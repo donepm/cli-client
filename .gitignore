@@ -11,6 +11,8 @@
 
 # Signing private key
 .travis/phar-private.pem
+.travis/build-key.pem
+.travis/secrets.tar
 
 # dpm.phar
 /dpm.phar
