@@ -6,6 +6,7 @@ use DonePM\ConsoleClient\Http\Client;
 use DonePM\ConsoleClient\Http\Commands\LoginCommand;
 use DonePM\ConsoleClient\Http\Request;
 use DonePM\ConsoleClient\Repositories\Reader\JsonReader;
+use DonePM\ConsoleClient\Repositories\Writer\JsonWriter;
 use Illuminate\Encryption\Encrypter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -55,8 +56,22 @@ class TokenCommand extends Command
         $password = $encrypter->decrypt($config->get('password'));
 
         $response = $httpClient->send(new LoginCommand($email, $password));
+        if ($response->getStatusCode() === 200) {
+            $tokenResponse = $response->getBody()->getContents();
 
-        var_dump($response);
+            $token = json_decode($tokenResponse, true);
+
+            if (array_key_exists('token', $token)) {
+                $config->set('token', $token['token']);
+
+                (new JsonWriter())->write($configFile, $config);
+
+                $this->info('You are logged in');
+                return;
+            }
+        }
+
+        $this->error('You are not logged in yet');
     }
 
     /**
