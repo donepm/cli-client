@@ -2,9 +2,6 @@
 
 namespace DonePM\ConsoleClient\Commands;
 
-use DonePM\ConsoleClient\Repositories\Config;
-use DonePM\ConsoleClient\Repositories\Reader\JsonReader;
-use DonePM\ConsoleClient\Repositories\Writer\JsonWriter;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,7 +20,7 @@ class InitCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('dpm:init')
+            ->setName('init')
             ->setDescription('Initializes local dpm account');
     }
 
@@ -32,9 +29,7 @@ class InitCommand extends Command
      */
     protected function handle()
     {
-        $configFile = $this->getConfigFile();
-
-        $config = $this->readConfigOrUseDefaultConfig($configFile);
+        $config = $this->getApplication()->config();
 
         if ( ! $config->has('url')
             || ! $this->confirm('Is your donePM API url ' . $config->get('url') . '?', true)
@@ -66,23 +61,6 @@ class InitCommand extends Command
             // $this->call('dpm:token');
         }
 
-        (new JsonWriter())->write($configFile, $config);
-    }
-
-    /**
-     * reads existing config or returns default config
-     *
-     * @param string $configFile
-     *
-     * @return \DonePM\ConsoleClient\Repositories\Config|\DonePM\ConsoleClient\Repositories\Repository
-     */
-    private function readConfigOrUseDefaultConfig($configFile)
-    {
-
-        if (file_exists($configFile)) {
-            return (new JsonReader())->read($configFile);
-        }
-
-        return new Config();
+        $this->getApplication()->writeConfig($config);
     }
 }
