@@ -3,6 +3,8 @@
 namespace DonePM\ConsoleClient\Commands\Tasks;
 
 use DonePM\ConsoleClient\Commands\Command;
+use DonePM\ConsoleClient\Http\Commands\TaskListCommand;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -16,39 +18,6 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class ListCommand extends Command
 {
-    private $demo = [
-        [
-            'id' => 8,
-            'project' => 'dpm',
-            'summary' => 'Do your work at the marketing',
-            'status' => 'new',
-        ],
-        [
-            'id' => 2,
-            'project' => 'dpm',
-            'summary' => 'Another task',
-            'status' => 'working',
-        ],
-        [
-            'id' => 45,
-            'project' => 'mb',
-            'summary' => 'Vacation days fixing',
-            'status' => 'verifying',
-        ],
-        [
-            'id' => 2,
-            'project' => 'mb',
-            'summary' => 'User registration',
-            'status' => 'new',
-        ],
-        [
-            'id' => 256,
-            'project' => 'mb',
-            'summary' => 'Password forgotten process',
-            'status' => 'done',
-        ],
-    ];
-
     /**
      * configures the command
      */
@@ -66,7 +35,32 @@ class ListCommand extends Command
      */
     protected function handle()
     {
-        $tasks = new Collection($this->demo);
+        $client = $this->getClient();
+
+        try {
+            $response = $client->send(new TaskListCommand());
+        } catch (ClientException $e) {
+            if ($e->getCode() === 401) {
+                $this->callSilent('dpm:token');
+
+                $this->getApplication()->resetConfig();
+
+                $response = $client->send(new TaskListCommand());
+            } else {
+                $this->error($e->getMessage());
+                return;
+            }
+        }
+
+        if ($response->getStatusCode() >= 300) {
+            $this->info('No Tasks found');
+
+            return;
+        }
+
+        $tasksData = json_decode($response->getBody()->getContents(), true)['data'];
+
+        $tasks = new Collection($tasksData);
 
         $statusIncluded = $this->input->getOption('status');
         if ( !empty($statusIncluded)) {
