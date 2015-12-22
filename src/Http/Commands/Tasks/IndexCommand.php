@@ -14,7 +14,7 @@ use Psr\Http\Message\RequestInterface;
  */
 class IndexCommand extends TokenizedCommand implements Command
 {
-    const PATH = '/api/v1/tasks';
+    const PATH = '/api/v1/tasks?include=project';
 
     /**
      * @return RequestInterface

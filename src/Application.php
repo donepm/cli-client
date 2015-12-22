@@ -102,7 +102,9 @@ class Application extends \Symfony\Component\Console\Application
             new Commands\Projects\InfoCommand(),
             new Commands\Projects\CreateCommand(),
             new Commands\Projects\DeleteCommand(),
+
             new Commands\Tasks\ListCommand(),
+            new Commands\Tasks\CreateCommand(),
 
             new SelfUpdateCommand(),
             new RollbackCommand(),
