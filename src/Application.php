@@ -61,6 +61,18 @@ class Application extends \Symfony\Component\Console\Application
     }
 
     /**
+     * resets config
+     *
+     * @return $this
+     */
+    public function resetConfig()
+    {
+        $this->config = null;
+
+        return $this;
+    }
+
+    /**
      * writes config
      *
      * @param \DonePM\ConsoleClient\Repositories\Config $config
