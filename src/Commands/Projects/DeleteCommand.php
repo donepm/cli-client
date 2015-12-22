@@ -77,6 +77,8 @@ class DeleteCommand extends Command
         }
 
         $this->error('Something went wrong');
+
+        return 1;
     }
 
 }
