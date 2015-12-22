@@ -1,6 +1,6 @@
 <?php
 
-namespace DonePM\ConsoleClient\Commands;
+namespace DonePM\ConsoleClient\Commands\Style;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputInterface;
@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class OutputStyle
  *
- * @package DonePM\ConsoleClient\Commands
+ * @package DonePM\ConsoleClient\Commands\Style
  */
 class OutputStyle extends SymfonyStyle
 {

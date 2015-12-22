@@ -2,6 +2,7 @@
 
 namespace DonePM\ConsoleClient\Commands;
 
+use DonePM\ConsoleClient\Commands\Style\OutputStyle;
 use DonePM\ConsoleClient\Http\Client;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -31,7 +32,7 @@ class Command extends \Symfony\Component\Console\Command\Command
     /**
      * The output interface implementation.
      *
-     * @var \DonePM\ConsoleClient\Commands\OutputStyle
+     * @var \DonePM\ConsoleClient\Commands\Style\OutputStyle
      */
     protected $output;
 
