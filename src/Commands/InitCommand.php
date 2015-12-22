@@ -56,11 +56,6 @@ class InitCommand extends Command
             $config->set('key', $key);
         }
 
-        if ( ! $config->has('token')) {
-            // fetch token
-            // $this->call('dpm:token');
-        }
-
         $this->getApplication()->writeConfig($config);
     }
 }
