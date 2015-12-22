@@ -3,6 +3,7 @@
 namespace DonePM\ConsoleClient\Http;
 
 use DonePM\ConsoleClient\Http\Commands\Command;
+use DonePM\ConsoleClient\Http\Commands\NeedsToken;
 use GuzzleHttp\ClientInterface;
 
 /**
@@ -20,6 +21,13 @@ class Client
     private $client;
 
     /**
+     * access token
+     *
+     * @var string
+     */
+    private $token;
+
+    /**
      * constructing Client
      *
      * @param \GuzzleHttp\ClientInterface $client
@@ -34,12 +42,30 @@ class Client
     }
 
     /**
+     * sets token
+     *
+     * @param string $token
+     *
+     * @return $this
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    /**
      * @param \DonePM\ConsoleClient\Http\Commands\Command $command
      *
      * @return mixed|\Psr\Http\Message\ResponseInterface
      */
     public function send(Command $command)
     {
+        if ($command instanceof NeedsToken) {
+            $command->token($this->token);
+        }
+
         return $this->client->send($command->request());
     }
 }
