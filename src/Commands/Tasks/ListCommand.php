@@ -26,8 +26,8 @@ class ListCommand extends Command
         $this
             ->setName('task:list')
             ->setDescription('List all tasks')
-            ->addOption('project', 'p', InputOption::VALUE_OPTIONAL, 'Fetch tasks for this project only')
-            ->addOption('status', 's', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Fetch tasks only with this status(es)');
+            ->addOption('project', 'p', InputOption::VALUE_REQUIRED, 'Fetch tasks for this project only')
+            ->addOption('status', 's', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Fetch tasks only with this status(es)');
     }
 
     /**
