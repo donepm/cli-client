@@ -8,6 +8,8 @@ use Psr\Http\Message\RequestInterface;
 /**
  * Class LoginCommand
  *
+ * Prepares the login request
+ *
  * @package DonePM\ConsoleClient\Http\Commands
  */
 class LoginCommand implements Command
@@ -45,6 +47,8 @@ class LoginCommand implements Command
      */
     public function request()
     {
-        return new Request('post', self::PATH, sprintf('username=%s&password=%s', $this->email, $this->password), ['Content-Type' => 'application/x-www-form-urlencoded']);
+        return new Request('post', self::PATH, sprintf('username=%s&password=%s', $this->email, $this->password), [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ]);
     }
 }
