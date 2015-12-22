@@ -33,29 +33,17 @@ class TokenCommand extends Command
      */
     protected function handle()
     {
-        $configFile = $this->getConfigFile();
+        $config = $this->getApplication()->config();
 
-        try {
-            $config = $this->readConfig($configFile);
-        } catch (\RuntimeException $e) {
-            $this->error($e->getMessage());
-            $this->info('Please set your configuration first.');
-
-            $this->call('dpm:init');
-
-            $config = $this->readConfig($configFile);
-        }
-
-        Request::$API_URL = $config->get('url');
-
-        $httpClient = new Client();
+        $httpClient = $this->getClient();
 
         $email = $config->get('email');
         $key = $config->get('key');
-        $encrypter = new Encrypter($key);
-        $password = $encrypter->decrypt($config->get('password'));
+
+        $password = (new Encrypter($key))->decrypt($config->get('password'));
 
         $response = $httpClient->send(new LoginCommand($email, $password));
+
         if ($response->getStatusCode() === 200) {
             $tokenResponse = $response->getBody()->getContents();
 
@@ -64,31 +52,14 @@ class TokenCommand extends Command
             if (array_key_exists('token', $token)) {
                 $config->set('token', $token['token']);
 
-                (new JsonWriter())->write($configFile, $config);
+                $this->getApplication()->writeConfig($config);
 
                 $this->info('You are logged in');
+
                 return;
             }
         }
 
         $this->error('You are not logged in yet');
-    }
-
-    /**
-     * reads existing config
-     *
-     * @param string $configFile
-     *
-     * @return \DonePM\ConsoleClient\Repositories\Config|\DonePM\ConsoleClient\Repositories\Repository
-     *
-     * @throws \RuntimeException when no config file is found
-     */
-    private function readConfig($configFile)
-    {
-        if ( ! file_exists($configFile)) {
-            throw new \RuntimeException("No config file $configFile found");
-        }
-
-        return (new JsonReader())->read($configFile);
     }
 }
