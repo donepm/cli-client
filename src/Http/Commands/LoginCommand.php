@@ -2,7 +2,7 @@
 
 namespace DonePM\ConsoleClient\Http\Commands;
 
-use DonePM\ConsoleClient\Http\Request;
+use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -47,8 +47,8 @@ class LoginCommand implements Command
      */
     public function request()
     {
-        return new Request('post', self::PATH, sprintf('username=%s&password=%s', $this->email, $this->password), [
+        return new Request('post', self::PATH, [
             'Content-Type' => 'application/x-www-form-urlencoded'
-        ]);
+        ], sprintf('username=%s&password=%s', $this->email, $this->password));
     }
 }
