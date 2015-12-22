@@ -26,7 +26,7 @@ class InfoCommand extends Command
         $this
             ->setName('project:info')
             ->setDescription('Get info about a project')
-            ->addArgument('id', InputArgument::REQUIRED, 'Project id');
+            ->addArgument('id', InputArgument::REQUIRED, 'Project identifier (slug or id)');
     }
 
     /**
@@ -34,12 +34,6 @@ class InfoCommand extends Command
      */
     protected function handle()
     {
-        if ( ! is_numeric($this->argument('id'))) {
-            $this->error('Argument id has to be numeric');
-
-            return 1;
-        }
-
         $client = $this->getClient();
 
         $command = new ShowCommand();
