@@ -3,7 +3,7 @@
 namespace DonePM\ConsoleClient\Commands\Tasks;
 
 use DonePM\ConsoleClient\Commands\Command;
-use DonePM\ConsoleClient\Http\Commands\TaskListCommand;
+use DonePM\ConsoleClient\Http\Commands\Tasks\IndexCommand;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Helper\Table;
@@ -37,15 +37,17 @@ class ListCommand extends Command
     {
         $client = $this->getClient();
 
+        $command = new IndexCommand();
+
         try {
-            $response = $client->send(new TaskListCommand());
+            $response = $client->send($command);
         } catch (ClientException $e) {
             if ($e->getCode() === 401) {
                 $this->callSilent('dpm:token');
 
-                $this->getApplication()->resetConfig();
+                $client->setToken($this->getApplication()->resetConfig()->config()->get('token'));
 
-                $response = $client->send(new TaskListCommand());
+                $response = $client->send($command);
             } else {
                 $this->error($e->getMessage());
                 return;
