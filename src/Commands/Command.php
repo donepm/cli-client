@@ -2,6 +2,7 @@
 
 namespace DonePM\ConsoleClient\Commands;
 
+use DonePM\ConsoleClient\Application;
 use DonePM\ConsoleClient\Commands\Style\OutputStyle;
 use DonePM\ConsoleClient\Http\Client;
 use Symfony\Component\Console\Helper\Table;
@@ -411,7 +412,7 @@ class Command extends \Symfony\Component\Console\Command\Command
         }
 
         return (new Client(new \GuzzleHttp\Client([
-            'base_uri' => $config->get('url', 'https://api.done.pm/'),
+            'base_uri' => $config->get('url', Application::API_URL),
         ])))->setToken($config->get('token'));
     }
 }

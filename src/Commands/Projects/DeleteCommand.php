@@ -50,7 +50,7 @@ class DeleteCommand extends Command
             if ($e->getCode() === 401) {
                 $this->callSilent('dpm:token');
 
-                $this->getApplication()->resetConfig();
+                $client->setToken($this->getApplication()->resetConfig()->config()->get('token'));
 
                 $response = $client->send($command);
             } elseif ($e->getCode() === 404) {

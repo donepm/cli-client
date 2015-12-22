@@ -2,6 +2,7 @@
 
 namespace DonePM\ConsoleClient\Commands;
 
+use DonePM\ConsoleClient\Application;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,7 +35,7 @@ class InitCommand extends Command
         if ( ! $config->has('url')
             || ! $this->confirm('Is your donePM API url ' . $config->get('url') . '?', true)
         ) {
-            $url = $this->ask('What is your donePM API url?', 'https://api.done.pm/');
+            $url = $this->ask('What is your donePM API url?', Application::API_URL);
             $config->set('url', $url);
         }
 
@@ -57,5 +58,7 @@ class InitCommand extends Command
         }
 
         $this->getApplication()->writeConfig($config);
+
+        return 0;
     }
 }

@@ -56,10 +56,12 @@ class TokenCommand extends Command
 
                 $this->info('You are logged in');
 
-                return;
+                return 0;
             }
         }
 
         $this->error('You are not logged in yet');
+
+        return 1;
     }
 }

@@ -28,8 +28,7 @@ class CreateCommand extends Command
             ->addArgument('name', InputArgument::REQUIRED, 'Project name to create')
             ->addOption('slug', 's', InputOption::VALUE_REQUIRED, 'Slug for the project')
             ->addOption('archived', 'a', InputOption::VALUE_NONE, 'Create an archived project')
-            ->addOption('public', 'p', InputOption::VALUE_NONE, 'Create a public project')
-        ;
+            ->addOption('public', 'p', InputOption::VALUE_NONE, 'Create a public project');
     }
 
     /**
@@ -51,22 +50,25 @@ class CreateCommand extends Command
             if ($e->getCode() === 401) {
                 $this->callSilent('dpm:token');
 
-                $this->getApplication()->resetConfig();
+                $client->setToken($this->getApplication()->resetConfig()->config()->get('token'));
 
                 $response = $client->send($command);
             } else {
                 $this->error($e->getMessage());
-                return;
+
+                return 1;
             }
         }
 
         if ($response->getStatusCode() === 201) {
             $this->info('Project created');
 
-            return;
+            return 0;
         }
 
         $this->error('Something went wrong');
+
+        return 1;
     }
 
 }

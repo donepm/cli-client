@@ -20,6 +20,8 @@ class Application extends \Symfony\Component\Console\Application
 {
     const VERSION = '1.0.0';
 
+    const API_URL = 'https://api.done.pm/';
+
     /**
      * config file
      *

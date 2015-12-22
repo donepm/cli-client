@@ -33,25 +33,28 @@ class ListCommand extends Command
     {
         $client = $this->getClient();
 
+        $command = new IndexCommand();
+
         try {
-            $response = $client->send(new IndexCommand());
+            $response = $client->send($command);
         } catch (ClientException $e) {
             if ($e->getCode() === 401) {
                 $this->callSilent('dpm:token');
 
-                $this->getApplication()->resetConfig();
+                $client->setToken($this->getApplication()->resetConfig()->config()->get('token'));
 
-                $response = $client->send(new IndexCommand());
+                $response = $client->send($command);
             } else {
                 $this->error($e->getMessage());
-                return;
+
+                return 1;
             }
         }
 
         if ($response->getStatusCode() >= 300) {
             $this->info('No Projects found');
 
-            return;
+            return 0;
         }
 
         $projects = json_decode($response->getBody()->getContents(), true);
@@ -71,5 +74,7 @@ class ListCommand extends Command
         }
 
         $table->render();
+
+        return 0;
     }
 }
