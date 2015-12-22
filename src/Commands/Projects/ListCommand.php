@@ -3,7 +3,7 @@
 namespace DonePM\ConsoleClient\Commands\Projects;
 
 use DonePM\ConsoleClient\Commands\Command;
-use DonePM\ConsoleClient\Http\Commands\ProjectListCommand;
+use DonePM\ConsoleClient\Http\Commands\Projects\IndexCommand;
 use GuzzleHttp\Exception\ClientException;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,14 +34,14 @@ class ListCommand extends Command
         $client = $this->getClient();
 
         try {
-            $response = $client->send(new ProjectListCommand());
+            $response = $client->send(new IndexCommand());
         } catch (ClientException $e) {
             if ($e->getCode() === 401) {
                 $this->callSilent('dpm:token');
 
                 $this->getApplication()->resetConfig();
 
-                $response = $client->send(new ProjectListCommand());
+                $response = $client->send(new IndexCommand());
             } else {
                 $this->error($e->getMessage());
                 return;
