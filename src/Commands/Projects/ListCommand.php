@@ -3,9 +3,8 @@
 namespace DonePM\ConsoleClient\Commands\Projects;
 
 use DonePM\ConsoleClient\Commands\Command;
-use DonePM\ConsoleClient\Http\Client;
 use DonePM\ConsoleClient\Http\Commands\ProjectListCommand;
-use DonePM\ConsoleClient\Repositories\Reader\JsonReader;
+use GuzzleHttp\Exception\ClientException;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,20 +31,29 @@ class ListCommand extends Command
      */
     protected function handle()
     {
-        $this->info('Projects listed...');
+        $client = $this->getClient();
 
-        $client = new Client();
+        try {
+            $response = $client->send(new ProjectListCommand());
+        } catch (ClientException $e) {
+            if ($e->getCode() === 401) {
+                $this->callSilent('dpm:token');
 
-        $configFile = $this->getConfigFile();
-        if (file_exists($configFile)) {
-            $config = (new JsonReader())->read($configFile);
+                $this->getApplication()->resetConfig();
+
+                $response = $client->send(new ProjectListCommand());
+            } else {
+                $this->error($e->getMessage());
+                return;
+            }
         }
 
-        $response = $client->send(new ProjectListCommand($config->get('token')));
         if ($response->getStatusCode() >= 300) {
-            $this->error('No Projects found');
+            $this->info('No Projects found');
+
             return;
         }
+
         $projects = json_decode($response->getBody()->getContents(), true);
 
         $projectsList = $projects['data'];
