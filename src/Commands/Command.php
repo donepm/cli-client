@@ -2,6 +2,7 @@
 
 namespace DonePM\ConsoleClient\Commands;
 
+use DonePM\ConsoleClient\Http\Client;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -15,6 +16,8 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
  * Class Command
  *
  * @package DonePM\ConsoleClient\Commands
+ *
+ * @method \DonePM\ConsoleClient\Application getApplication()
  */
 class Command extends \Symfony\Component\Console\Command\Command
 {
@@ -393,28 +396,21 @@ class Command extends \Symfony\Component\Console\Command\Command
     }
 
     /**
-     * returns config file
+     * return http client
      *
-     * @return string
+     * @return Client
      */
-    protected function getConfigFile()
+    protected function getClient()
     {
-        return $this->getDirectoryInHome('.dpm/config');
-    }
+        $config = $this->getApplication()->config();
 
-    /**
-     * returns directory path within home directory
-     *
-     * @param string $path
-     *
-     * @return string
-     */
-    protected function getDirectoryInHome($path)
-    {
-        if (isset($_SERVER['HOME'])) {
-            return $_SERVER['HOME'] . DIRECTORY_SEPARATOR . $path;
+        if ( ! $config->has('token')) {
+            // fetch token
+            $this->call('dpm:token');
         }
 
-        return $_SERVER['HOMEDRIVE'] . DIRECTORY_SEPARATOR . $_SERVER['HOMEPATH'] . DIRECTORY_SEPARATOR . $path;
+        return (new Client(new \GuzzleHttp\Client([
+            'base_uri' => $config->get('url', 'https://api.done.pm/'),
+        ])))->setToken($config->get('token'));
     }
 }
