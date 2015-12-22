@@ -33,6 +33,12 @@ class DeleteCommand extends Command
      */
     protected function handle()
     {
+        if ( ! is_numeric($this->argument('id'))) {
+            $this->error('Argument id has to be numeric');
+
+            return 1;
+        }
+
         $client = $this->getClient();
 
         $command = new \DonePM\ConsoleClient\Http\Commands\Projects\DeleteCommand();
@@ -47,23 +53,27 @@ class DeleteCommand extends Command
                 $this->getApplication()->resetConfig();
 
                 $response = $client->send($command);
+            } elseif ($e->getCode() === 404) {
+                $this->info('Project does not exist');
+
+                return 0;
             } else {
                 $this->error($e->getMessage());
 
-                return;
+                return 0;
             }
         } catch (ServerException $e) {
             $message = json_decode($e->getResponse()->getBody()->getContents(), true);
             $detail = $message['detail'];
             $this->error($detail);
 
-            return;
+            return 1;
         }
 
         if ($response->getStatusCode() === 204) {
             $this->info('Project deleted');
 
-            return;
+            return 0;
         }
 
         $this->error('Something went wrong');
