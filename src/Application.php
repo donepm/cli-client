@@ -98,6 +98,7 @@ class Application extends \Symfony\Component\Console\Application
             new TokenCommand(),
             new Commands\Projects\ListCommand(),
             new Commands\Projects\CreateCommand(),
+            new Commands\Projects\DeleteCommand(),
             new Commands\Tasks\ListCommand(),
 
             new SelfUpdateCommand(),
