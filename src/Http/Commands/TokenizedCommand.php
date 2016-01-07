@@ -2,6 +2,8 @@
 
 namespace DonePM\ConsoleClient\Http\Commands;
 
+use DonePM\ConsoleClient\Application;
+
 /**
  * Class TokenizedCommand
  *
@@ -46,7 +48,8 @@ abstract class TokenizedCommand implements Command, NeedsToken
         return array_merge([
             'Authorization' => 'Bearer ' . $this->token(),
             'Accept' => 'application/vnd.api+json',
-            'Content-Type' => 'application/vnd.api+json'
+            'Content-Type' => 'application/vnd.api+json',
+            'User-Agent' => 'cli-client/' . Application::VERSION,
         ], $additionalHeaders);
     }
 }
