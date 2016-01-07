@@ -106,8 +106,9 @@ class Application extends \Symfony\Component\Console\Application
             new Commands\Tasks\ListCommand(),
             new Commands\Tasks\CreateCommand(),
 
-            new SelfUpdateCommand(),
-            new RollbackCommand(),
+            # does not work right now :-(
+            #new SelfUpdateCommand(),
+            #new RollbackCommand(),
         ]);
     }
 
