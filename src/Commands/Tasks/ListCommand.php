@@ -137,6 +137,8 @@ class ListCommand extends Command
     }
 
     /**
+     * returns the status
+     *
      * @param array $task
      *
      * @return string
