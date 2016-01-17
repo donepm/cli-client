@@ -4,6 +4,7 @@ namespace DonePM\ConsoleClient\Commands\Tasks;
 
 use DonePM\ConsoleClient\Commands\Command;
 use DonePM\ConsoleClient\Http\Commands\Tasks\IndexCommand;
+use DonePM\ConsoleClient\Renderer\TaskRenderer;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Helper\Table;
@@ -72,9 +73,10 @@ class ListCommand extends Command
         }
 
         $output = $this->output;
-        $this->getFilteredOrderedTasks($tasks)->each(function ($task) use ($output, $includedData) {
-            $output->writeln(sprintf('%s <options=bold>%s</>  <info>%s</info> %s', $this->getStatusLabel($task),
-                array_get($task, 'attributes.summary'), $this->getTaskId($task, $includedData), $this->getStatus($task)));
+        $renderer = new TaskRenderer($output, $includedData);
+
+        $this->getFilteredOrderedTasks($tasks)->each(function ($task) use ($renderer) {
+            $renderer->setTask($task)->writeln();
         });
 
         return 0;
@@ -102,49 +104,5 @@ class ListCommand extends Command
 
             return $aProjectId < $bProjectId ? -1 : 1;
         });
-    }
-
-    /**
-     * @param array $task
-     *
-     * @return string
-     */
-    private function getStatusLabel($task)
-    {
-        return array_get($task, 'attributes.status') !== 'done' ? '▢' : '<fg=green>✔</>';
-    }
-
-    /**
-     * returns task identifier
-     *
-     * @param array $task
-     * @param array $includedData
-     *
-     * @return string
-     */
-    private function getTaskId($task, $includedData)
-    {
-        $projectSlug = $projectId = array_get($task, 'relationships.project.data.id');
-
-        foreach ($includedData as $data) {
-            if (array_get($data, 'id') == $projectId && array_get($data, 'type') === 'projects') {
-                $projectSlug = array_get($data, 'attributes.slug');
-                break;
-            }
-        }
-
-        return '♯' . $projectSlug . '-' . array_get($task, 'attributes.identifier');
-    }
-
-    /**
-     * returns the status
-     *
-     * @param array $task
-     *
-     * @return string
-     */
-    private function getStatus($task)
-    {
-        return '<fg=blue>♯' . array_get($task, 'attributes.status') . '</>';
     }
 }
