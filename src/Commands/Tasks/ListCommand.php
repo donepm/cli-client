@@ -74,7 +74,7 @@ class ListCommand extends Command
         $output = $this->output;
         $this->getFilteredOrderedTasks($tasks)->each(function ($task) use ($output, $includedData) {
             $output->writeln(sprintf('%s <options=bold>%s</>  <info>%s</info> %s', $this->getStatusLabel($task),
-                array_get($task, 'attributes.summary'), $this->getId($task, $includedData), $this->getStatus($task)));
+                array_get($task, 'attributes.summary'), $this->getTaskId($task, $includedData), $this->getStatus($task)));
         });
 
         return 0;
@@ -122,7 +122,7 @@ class ListCommand extends Command
      *
      * @return string
      */
-    private function getId($task, $includedData)
+    private function getTaskId($task, $includedData)
     {
         $projectSlug = $projectId = array_get($task, 'relationships.project.data.id');
 
