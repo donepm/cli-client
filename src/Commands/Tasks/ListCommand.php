@@ -3,13 +3,16 @@
 namespace DonePM\ConsoleClient\Commands\Tasks;
 
 use DonePM\ConsoleClient\Commands\Command;
+use DonePM\ConsoleClient\Http\Commands\Projects\RelatedTasksCommand;
 use DonePM\ConsoleClient\Http\Commands\Tasks\IndexCommand;
 use DonePM\ConsoleClient\Renderer\TaskRenderer;
+use DonePM\ConsoleClient\Services\ProjectIdSlugMapper;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Helper\TableStyle;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
@@ -26,7 +29,8 @@ class ListCommand extends Command
     {
         $this
             ->setName('task:list')
-            ->setDescription('List all tasks');
+            ->setDescription('List all tasks')
+            ->addArgument('project', InputArgument::OPTIONAL, 'Filter tasks for a project');
     }
 
     /**
@@ -36,7 +40,14 @@ class ListCommand extends Command
     {
         $client = $this->getClient();
 
-        $command = new IndexCommand();
+        $project = $this->argument('project');
+
+        if (null === $project) {
+            $command = new IndexCommand();
+        } else {
+            $command = (new RelatedTasksCommand())
+                ->setId($this->resolveProjectId($project));
+        }
 
         try {
             $response = $client->send($command);
@@ -104,5 +115,25 @@ class ListCommand extends Command
 
             return $aProjectId < $bProjectId ? -1 : 1;
         });
+    }
+
+    /**
+     * resolves project id, from slug by using internal mapper
+     *
+     * @param int|string $param
+     *
+     * @return int|string
+     */
+    private function resolveProjectId($param)
+    {
+        if ( ! is_numeric($param)) {
+            $config = $this->getApplication()->config();
+
+            $slugMapper = new ProjectIdSlugMapper($config);
+
+            return $slugMapper->getIdBySlug($param) ?: $param;
+        }
+
+        return $param;
     }
 }

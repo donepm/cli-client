@@ -21,7 +21,7 @@ class ShowCommand extends TokenizedCommand implements Command
      *
      * @var integer
      */
-    private $id;
+    protected $id;
 
     /**
      * @return RequestInterface
