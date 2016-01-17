@@ -60,8 +60,8 @@ class ListCommand extends Command
         }
 
         $responseData = json_decode($response->getBody()->getContents(), true);
-        $tasksData = $responseData['data'];
-        $includedData = $responseData['included'];
+        $tasksData = array_get($responseData, 'data', []);
+        $includedData = array_get($responseData, 'included', []);
 
         $tasks = new Collection($tasksData);
 
@@ -88,7 +88,11 @@ class ListCommand extends Command
     private function getFilteredOrderedTasks(Collection $tasks)
     {
         return $tasks->sort(function ($a, $b) {
-            if ($a['project'] === $b['project']) {
+
+            $aProjectId = array_get($a, 'relationships.project.data.id');
+            $bProjectId = array_get($b, 'relationships.project.data.id');
+
+            if ($aProjectId === $bProjectId) {
                 if ($a['id'] === $b['id']) {
                     return 0;
                 }
@@ -96,7 +100,7 @@ class ListCommand extends Command
                 return $a['id'] < $b['id'] ? -1 : 1;
             }
 
-            return $a['project'] < $b['project'] ? -1 : 1;
+            return $aProjectId < $bProjectId ? -1 : 1;
         });
     }
 
