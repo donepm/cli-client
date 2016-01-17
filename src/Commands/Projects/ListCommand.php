@@ -4,6 +4,7 @@ namespace DonePM\ConsoleClient\Commands\Projects;
 
 use DonePM\ConsoleClient\Commands\Command;
 use DonePM\ConsoleClient\Http\Commands\Projects\IndexCommand;
+use DonePM\ConsoleClient\Services\ProjectIdSlugMapper;
 use GuzzleHttp\Exception\ClientException;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -59,7 +60,17 @@ class ListCommand extends Command
 
         $projects = json_decode($response->getBody()->getContents(), true);
 
-        $projectsList = $projects['data'];
+        $projectsList = array_get($projects, 'data', []);
+
+        if (empty($projectsList)) {
+            $this->info('No Projects found');
+
+            return 0;
+        }
+
+        $config = $this->getApplication()->config();
+
+        $slugMapper = new ProjectIdSlugMapper($config);
 
         $table = new Table($this->output);
         $table->setHeaders(['Id', 'Slug', 'Project', 'Status']);
@@ -71,9 +82,13 @@ class ListCommand extends Command
                 $project['attributes']['name'],
                 $project['attributes']['status'],
             ]);
+
+            $slugMapper->addMapping($project['id'], $project['attributes']['slug']);
         }
 
         $table->render();
+
+        $this->getApplication()->writeConfig($slugMapper->getConfig());
 
         return 0;
     }
